@@ -1,5 +1,12 @@
 import React from "react";
-import { Header, Footer, Carousel, SideMenu, ProductCollection, BusinessPartners } from "../../components";
+import {
+  Header,
+  Footer,
+  Carousel,
+  SideMenu,
+  ProductCollection,
+  BusinessPartners,
+} from "../../components";
 import { Row, Col, Typography, Spin } from "antd";
 import sideImage from "../../assets/images/sider_2019_12-09.png";
 import sideImage2 from "../../assets/images/sider_2019_02-04.png";
@@ -7,47 +14,38 @@ import sideImage3 from "../../assets/images/sider_2019_02-04-2.png";
 import styles from "./HomePage.module.css";
 import { withTranslation, WithTranslation } from "react-i18next";
 import axios from "axios";
+import { connect } from "react-redux";
+import { RootState } from "../../redux/store";
+import { giveMeDataActionCreator } from "../../redux/recommendProducts/recommendProductsActions";
 
-interface State {
-  loading: boolean;
-  error: string | null;
-  productList: any[];
-}
-
-class HomePageComponent extends React.Component<WithTranslation, State> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: true,
-      error: null,
-      productList: [],
-    };
+const mapStateToProps = (state: RootState) => {
+  return {
+    loading: state.recommendProducts.loading,
+    error: state.recommendProducts.error,
+    productList: state.recommendProducts.productList
   }
+};
 
-  async componentDidMount() {
-    try {
-      const { data } = await axios.get("http://123.56.149.216:8080/api/productCollections");
-      this.setState({ loading: false, error: null, productList: data });
-    } catch (e) {
-      this.setState({ error: e.message, loading: false });
+const mapDispatchToProps = (dispatch) => {
+  return {
+    giveMeData: () => {
+      dispatch(giveMeDataActionCreator());
     }
+  };
+};
+
+type PropsType = WithTranslation &
+  ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
+
+class HomePageComponent extends React.Component<PropsType> {
+  componentDidMount() {
+    this.props.giveMeData();
   }
-  // componentDidMount() {
-  //   axios
-  //     .get("http://123.56.149.216:8080/api/productCollections", {
-  //       headers: {
-  //         "x-icode": "D48FA5B7CD112706",
-  //       },
-  //     })
-  //     .then((res) => {
-  //       this.setState({ productList: res.data });
-  //     });
-  // }
 
   render() {
-    const { t } = this.props;
-    const { productList, loading, error } = this.state;
-
+    // console.log(this.props.t)
+    const { t, productList, loading, error } = this.props;
     if (loading) {
       return (
         <Spin
@@ -65,7 +63,6 @@ class HomePageComponent extends React.Component<WithTranslation, State> {
     if (error) {
       return <div>网站出错：{error}</div>;
     }
-
     return (
       <>
         <Header />
@@ -114,4 +111,7 @@ class HomePageComponent extends React.Component<WithTranslation, State> {
   }
 }
 
-export const HomePage = withTranslation()(HomePageComponent);
+export const HomePage = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withTranslation()(HomePageComponent));

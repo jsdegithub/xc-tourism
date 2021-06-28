@@ -3,7 +3,12 @@ import styles from "./Header.module.css";
 import logo from "../../assets/logo.svg";
 import { Layout, Typography, Input, Menu, Button, Dropdown } from "antd";
 import { GlobalOutlined } from "@ant-design/icons";
-import { useHistory, useLocation, useParams, useRouteMatch } from "react-router-dom";
+import {
+  useHistory,
+  useLocation,
+  useParams,
+  useRouteMatch,
+} from "react-router-dom";
 import { useSelector } from "../../redux/hooks";
 import { useDispatch } from "react-redux";
 import { Dispatch } from "redux";
@@ -19,8 +24,8 @@ export const Header: React.FC = () => {
   const location = useLocation();
   const params = useParams();
   const match = useRouteMatch();
-  const language = useSelector((state) => state.language);
-  const languageList = useSelector((state) => state.languageList);
+  const language = useSelector((state) => state.language.language);
+  const languageList = useSelector((state) => state.language.languageList);
   const dispatch = useDispatch();
   // const dispatch = useDispatch<Dispatch<LanguageActionTypes>>();
   const { t } = useTranslation();
@@ -48,7 +53,9 @@ export const Header: React.FC = () => {
                 {languageList.map((l) => {
                   return <Menu.Item key={l.code}>{l.name}</Menu.Item>;
                 })}
-                <Menu.Item key={"new"}>{t("header.add_new_language")}</Menu.Item>
+                <Menu.Item key={"new"}>
+                  {t("header.add_new_language")}
+                </Menu.Item>
               </Menu>
             }
             icon={<GlobalOutlined />}
@@ -56,8 +63,12 @@ export const Header: React.FC = () => {
             {language === "zh" ? "中文" : "English"}
           </Dropdown.Button>
           <Button.Group className={styles["button-group"]}>
-            <Button onClick={() => history.push("register")}>{t("header.register")}</Button>
-            <Button onClick={() => history.push("signIn")}>{t("header.signin")}</Button>
+            <Button onClick={() => history.push("register")}>
+              {t("header.register")}
+            </Button>
+            <Button onClick={() => history.push("signIn")}>
+              {t("header.signin")}
+            </Button>
           </Button.Group>
         </div>
       </div>
@@ -68,7 +79,10 @@ export const Header: React.FC = () => {
             {t("header.title")}
           </Typography.Title>
         </span>
-        <Input.Search placeholder={"请输入旅游目的地、主题、或关键字"} className={styles["search-input"]} />
+        <Input.Search
+          placeholder={"请输入旅游目的地、主题、或关键字"}
+          className={styles["search-input"]}
+        />
       </Layout.Header>
       <Menu mode={"horizontal"} className={styles["main-menu"]}>
         <Menu.Item key="1"> {t("header.home_page")} </Menu.Item>
