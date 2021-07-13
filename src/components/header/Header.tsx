@@ -3,7 +3,12 @@ import styles from "./Header.module.css";
 import logo from "../../assets/logo.svg";
 import { Layout, Typography, Input, Menu, Button, Dropdown } from "antd";
 import { GlobalOutlined } from "@ant-design/icons";
-import { useHistory, useLocation, useParams, useRouteMatch } from "react-router-dom";
+import {
+  useHistory,
+  useLocation,
+  useParams,
+  useRouteMatch,
+} from "react-router-dom";
 import { useSelector } from "../../redux/hooks";
 import { useDispatch } from "react-redux";
 import { Dispatch } from "redux";
@@ -17,7 +22,7 @@ import jwt_decode, { JwtPayload as DefaultJwtPayload } from "jwt-decode";
 import { userSlice } from "../../redux/user/slice";
 
 interface JwtPayload extends DefaultJwtPayload {
-  username: string;
+  username: string
 }
 
 export const Header: React.FC = () => {
@@ -31,15 +36,18 @@ export const Header: React.FC = () => {
   // const dispatch = useDispatch<Dispatch<LanguageActionTypes>>();
   const { t } = useTranslation();
 
-  const jwt = useSelector((s) => s.user.token);
-  const [username, setUsername] = useState("");
+  const jwt = useSelector(s => s.user.token)
+  const [username, setUsername] = useState("")
 
-  useEffect(() => {
-    if (jwt) {
-      const token = jwt_decode<JwtPayload>(jwt);
-      setUsername(token.username);
+  const shoppingCartItems = useSelector(s => s.shoppingCart.items)
+  const shoppingCartLoading = useSelector(s => s.shoppingCart.loading)
+
+  useEffect(()=>{
+    if(jwt){
+      const token = jwt_decode<JwtPayload>(jwt)
+      setUsername(token.username)
     }
-  }, [jwt]);
+  }, [jwt])
 
   const menuClickHandler = (e) => {
     console.log(e);
@@ -52,9 +60,9 @@ export const Header: React.FC = () => {
   };
 
   const onLogout = () => {
-    dispatch(userSlice.actions.logOut());
-    history.push("/");
-  };
+    dispatch(userSlice.actions.logOut())
+    history.push("/")
+  }
 
   return (
     <div className={styles["app-header"]}>
@@ -69,7 +77,9 @@ export const Header: React.FC = () => {
                 {languageList.map((l) => {
                   return <Menu.Item key={l.code}>{l.name}</Menu.Item>;
                 })}
-                <Menu.Item key={"new"}>{t("header.add_new_language")}</Menu.Item>
+                <Menu.Item key={"new"}>
+                  {t("header.add_new_language")}
+                </Menu.Item>
               </Menu>
             }
             icon={<GlobalOutlined />}
@@ -83,18 +93,21 @@ export const Header: React.FC = () => {
                 <Typography.Text strong>{username}</Typography.Text>
               </span>
               <Button
-                onClick={() => {
-                  history.push("/shoppingCart");
-                }}
+                loading={shoppingCartLoading}
+                onClick={() => history.push("/shoppingCart")}
               >
-                {t("header.shoppingCart")}
+                {t("header.shoppingCart")}({shoppingCartItems.length})
               </Button>
               <Button onClick={onLogout}>{t("header.signOut")}</Button>
             </Button.Group>
           ) : (
             <Button.Group className={styles["button-group"]}>
-              <Button onClick={() => history.push("/register")}>{t("header.register")}</Button>
-              <Button onClick={() => history.push("/signIn")}>{t("header.signin")}</Button>
+              <Button onClick={() => history.push("/register")}>
+                {t("header.register")}
+              </Button>
+              <Button onClick={() => history.push("/signIn")}>
+                {t("header.signin")}
+              </Button>
             </Button.Group>
           )}
         </div>
